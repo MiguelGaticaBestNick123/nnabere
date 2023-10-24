@@ -94,29 +94,31 @@
             Reservar una cita
         </div>
         <div class="card-body">
-            <form>
+            <form method="post" action="{% url 'agendar' %}">
+                {% csrf_token %}
                 <div class="form-group">
                     <label for="rut">RUT del Paciente:</label>
-                    <input type="text" class="form-control" id="rut" placeholder="12.345.678-9">
+                    <input type="text" class="form-control" name="rut" id="rut" placeholder="12.345.678-9">
                 </div>
                 <div class="form-group">
                     <label for="profesional">Profesional:</label>
-                    <select class="form-control" id="profesional">
-                        <option value="profesional1">Profesional 1</option>
-                        <option value="profesional2">Profesional 2</option>
-                        <option value="profesional3">Profesional 3</option>
+                    <select class="form-control" name="profesional" id="profesional">
+                        {% for prof in data %}
+                            <option value="{{ prof.Rut }}">{{ prof.Nombres }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="fecha">Fecha:</label>
-                    <input type="date" class="form-control" id="fecha">
+                    <input type="date" class="form-control" name="fecha" id="fecha">
                 </div>
                 <div class="form-group">
                     <label for="hora">Hora:</label>
-                    <input type="time" class="form-control" id="hora">
+                    <input type="time" class="form-control" name="hora" id="hora">
                 </div>
                 <button type="submit" class="btn btn-primary">Reservar cita</button>
             </form>
+            
         </div>
     </div>
     

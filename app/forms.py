@@ -1,10 +1,11 @@
 from django import forms
 from .models import Agenda, Pacientes, Profesionales
 
-class AgendarCitaForm(forms.ModelForm):
-    class Meta:
-        model = Agenda
-        fields = ['RutPaciente', 'RutProfesional', 'FechaAtencion', 'IdBloque']
+class AgendarCitaForm(forms.Form):
+    rut = forms.CharField(label='RUT del Paciente', max_length=20)
+    profesional = forms.CharField(label='Profesional', max_length=20)
+    fecha = forms.DateField(label='Fecha de atención')
+    hora = forms.TimeField(label='Hora de atención')
 
 class BuscarCitasForm(forms.Form):
     fecha = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))

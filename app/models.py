@@ -64,15 +64,15 @@ class Box(models.Model):
 	IdUsuario      	=  	models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Agenda(models.Model):
-    RutProfesional = models.ForeignKey(Profesionales, on_delete=models.CASCADE, related_name='profesional', verbose_name="Rut del profesional")
-    RutPaciente = models.ForeignKey(Pacientes, on_delete=models.CASCADE, related_name='paciente', verbose_name="Rut del paciente")
-    FechaHoraSolicitud = models.DateTimeField(auto_now_add=True)
-    FechaAtencion = models.DateField(verbose_name="Fecha de atención")
-    Estado = models.BooleanField()
-    IdBloque = models.ForeignKey(Bloque, on_delete=models.CASCADE, related_name='bloque', verbose_name="ID de bloque")
-    Tarifa 	= 	models.DecimalField(decimal_places=2, max_digits=10)
-    IdBox 	= 	models.ForeignKey(Box, on_delete=models.CASCADE, related_name='agenda_box')
-    IdContrato 	= 	models.ForeignKey(Contrato, on_delete=models.CASCADE, related_name='agenda_contrato')
+    RutProfesional = models.ForeignKey(Profesionales, on_delete=models.CASCADE, related_name='profesional', verbose_name="Rut del profesional", null=True)
+    RutPaciente = models.ForeignKey(Pacientes, on_delete=models.CASCADE, related_name='paciente', verbose_name="Rut del paciente", null=True)
+    FechaHoraSolicitud = models.DateTimeField(auto_now_add=True, null=True)
+    FechaAtencion = models.DateField(verbose_name="Fecha de atención", null=True)
+    Estado = models.BooleanField(null=True)
+    IdBloque = models.ForeignKey(Bloque, on_delete=models.CASCADE, related_name='bloque', verbose_name="ID de bloque", null=True)
+    Tarifa 	= 	models.DecimalField(decimal_places=2, max_digits=10, null=True)
+    IdBox 	= 	models.ForeignKey(Box, on_delete=models.CASCADE, related_name='agenda_box', null=True)
+    IdContrato 	= 	models.ForeignKey(Contrato, on_delete=models.CASCADE, related_name='agenda_contrato', null=True)
     
 class HistorialPago(models.Model):
 	FechaHoraPago 	= 	models.DateTimeField(auto_now_add=True)
