@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clínica XYZ</title>
+    <title>Clínica XYZ - Mis Reservas</title>
     <!-- Enlace a Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         /* Estilo para el footer fijo en la parte inferior */
         body {
-            margin: 0;
-            padding: 0;
-            position: relative;
             padding-bottom: 100px; /* Agregamos un espacio al final de la página para el footer */
         }
 
@@ -24,29 +21,29 @@
             text-align: center;
             padding: 10px;
         }
-                /* Estilo para el encabezado */
-                .navbar {
-                    background-color: #145494; /* Color de fondo del encabezado */
-                }
-        
-                .navbar-brand {
-                    color: white;
-                    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-                }
-        
-                .navbar-nav .nav-link {
-                    color: white;
-                }
-        
-                /* Estilo para el contenido principal */
-                .container {
-                    margin-top: 30px; /* Para evitar que el contenido sea ocultado por el encabezado */
-                }
-        
-                .nav-item{
-                    font-size: 27px;
-                    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-                }
+
+        /* Estilo para el encabezado */
+        .navbar {
+            background-color: #145494; /* Color de fondo del encabezado */
+        }
+
+        .navbar-brand {
+            color: white;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        .navbar-nav .nav-link {
+            color: white;
+        }
+
+        /* Estilo para el contenido principal */
+        .container {
+            margin-top: 30px; /* Para evitar que el contenido sea ocultado por el encabezado */
+        }
+
+        .card {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -85,51 +82,24 @@
 
 <!-- Contenido principal -->
 <div class="container mt-4">
-    <h2>Reserva tu hora medica con nuestros profesionales de la salud.</h2>
-    <p>Servicios de alta calidad para tu bienestar.</p>
+    <h2>Mis Reservas</h2>
     
-    <!-- Formulario de reserva de hora -->
-    <div class="card mt-4">
+    <!-- Listado de reservas -->
+    <div class="card">
         <div class="card-header bg-info text-white">
-            Reservar una cita
+            Listado de Reservas
         </div>
         <div class="card-body">
-            <form method="post" action="{% url 'agendar' %}">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="rut">RUT del Paciente:</label>
-                    <input type="text" class="form-control" name="rut" id="rut" placeholder="12.345.678-9">
-                </div>
-                <div class="form-group">
-                    <label for="profesional">Profesional:</label>
-                    <select class="form-control" name="profesional" id="profesional">
-                        {% for prof in data %}
-                            <option value="{{ prof.Rut }}">{{ prof.Nombres }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="fecha">Fecha:</label>
-                    <input type="date" class="form-control" name="fecha" id="fecha">
-                </div>
-                <div class="form-group">
-                    <label for="profesional">Bloques Disponibles:</label>
-                    <select class="form-control" name="profesional" id="profesional">
-                        {% for prof in data %}
-                            <option value="{{ prof.Rut }}">{{ prof.Nombres }}</option>
-                        {% endfor %}
-                        //// hay que cambiar eso
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Reservar cita</button>
-                <button type="submit" class="btn btn-primary">Ver mis reservas</button>
-            </form>
-            
+            <ul class="list-group">
+                {% for reserva in reservas %}
+                    <li class="list-group-item">Reserva con {{ reserva.profesional }} - <a href="{% url 'detalles_reserva' reserva.id %}">Ver Detalles</a></li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
     
-    <!-- Botón de ver mis reservas -->
-    
+    <!-- Botón para volver -->
+    <a href="#" class="btn btn-primary mt-3">Volver</a>
 </div>
 
 <!-- Pie de página fijo en la parte inferior -->
