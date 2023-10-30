@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Profesionales, Pacientes, Agenda
 from .forms import AgendarCitaForm
+from .forms import LoginForm
 
 # Create your views here.
 
@@ -37,7 +38,16 @@ def agendar (request):
     return render(request, 'app/pedirhora.html', contexto)
 
 
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            # Realiza la autenticación o el manejo del formulario aquí
+            pass  # Coloca aquí tu lógica para el inicio de sesión
+    else:
+        form = LoginForm()
 
+    return render(request, 'login.html', {'form': form})
 
 
 
