@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Profesionales, Pacientes, Agenda
 from .forms import AgendarCitaForm
 from .forms import LoginForm
+from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
 
@@ -40,14 +41,29 @@ def agendar (request):
 
 def login_view(request):
     if request.method == 'POST':
+        print("POST data: ", request.POST)  # Imprime los datos enviados
+        print("request.method == post correcto")
         form = LoginForm(request.POST)
-        if form.is_valid():
-            # Realiza la autenticación o el manejo del formulario aquí
-            pass  # Coloca aquí tu lógica para el inicio de sesión
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            return redirect('inicio')
+        else:
+            print("Mal ahí, no se pudo autenticar")
     else:
-        form = LoginForm()
+        form = LoginForm(request)
+        print("request.method == post incorrecto")
+    contexto = {
+        "form": form
+    }
+    return render(request, 'app/login.html', contexto)
 
-    return render(request, 'login.html', {'form': form})
+
+def logout_view(request):
+    logout(request)  # Realiza la desconexión del usuario
+    return render(request,'inicio')
 
 
 

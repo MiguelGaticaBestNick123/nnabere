@@ -1,5 +1,9 @@
 from django import forms
 from .models import Agenda, Pacientes, Profesionales
+from django.contrib.auth.forms import AuthenticationForm
+
+class LoginForm(AuthenticationForm):
+    pass
 
 class AgendarCitaForm(forms.Form):
     rut = forms.CharField(label='RUT del Paciente', max_length=20)
@@ -20,3 +24,4 @@ class RegistrarMedicoForm(forms.ModelForm):
     class Meta:
         model = Profesionales
         fields = '__all__'  # Puedes personalizar los campos aquí
+

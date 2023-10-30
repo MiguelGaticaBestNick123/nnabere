@@ -57,9 +57,7 @@
     <div class="container">
         
         <a class="navbar-brand" href="#" style="font-size: 39px;">
-            
             <img src="{% static 'assets/imgs/png-clipart-dr-mario-dr-luigi-super-mario-bros-mario-yoshi-mario-purple-heroes (2).png' %}" alt="Logo Clínica Durok" width="50" height="50">
-            
         </a>
         <p style="font-size: 30px; color: white;">Clinica Durok</p>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,13 +66,13 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" style="color: white;">Inicio</a>
+                    <a class="nav-link" href="{% url 'inicio' %}" style="color: white;">Inicio</a>
                 </li>
                 <li class="nav-item">
                     <span class="nav-link" style="color: white;">-</span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" style="color: white;">Iniciar Sesión</a>
+                    <a class="nav-link" href="{% url 'login' %}" style="color: white;">Iniciar Sesión</a>
                 </li>
                 <li class="nav-item">
                     <span class="nav-link" style="color: white;">-</span>
@@ -82,11 +80,19 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#" style="color: white;">Contáctanos</a>
                 </li>
+                <!-- Nombre del usuario autenticado y menú desplegable de desconexión -->
+                <li class="nav-item dropdown mr-auto"> 
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+                        {% if user.is_authenticated %}Bienvenido, {{ user.username }}{% endif %}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'logout' %}">Desconectar</a>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
-
 
 <!-- Contenido principal -->
 <div class="container mt-4">
