@@ -6,6 +6,7 @@
     <title>Clínica XYZ</title>
     <!-- Enlace a Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    {% load static %}
     <style>
         /* Estilo para el footer fijo en la parte inferior */
         body {
@@ -54,10 +55,13 @@
 <!-- Encabezado -->
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
+        
         <a class="navbar-brand" href="#" style="font-size: 39px;">
-            <img src="img/png-clipart-dr-mario-dr-luigi-super-mario-bros-mario-yoshi-mario-purple-heroes (2).png" alt="Logo Clínica Durok" width="50" height="50">
-            Clínica Durok
+            
+            <img src="{% static 'assets/imgs/png-clipart-dr-mario-dr-luigi-super-mario-bros-mario-yoshi-mario-purple-heroes (2).png' %}" alt="Logo Clínica Durok" width="50" height="50">
+            
         </a>
+        <p style="font-size: 30px; color: white;">Clinica Durok</p>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -92,8 +96,8 @@
     <!-- Sección de ayuda con imagen y botones -->
     <div class="row">
         <div class="col-md-6">
-            <img src="img/Dr._Mario_SSBU.webp" alt="Mario" class="img-fluid" width="300">
-            <p style="font-size: 30px;" >Mmm tienes gay.</p>
+            <img src="{% static 'assets/imgs/Dr._Mario_SSBU.webp' %}" alt="Mario" class="img-fluid" width="300">
+           <!--  <p style="font-size: 30px;" >Mmm tienes gay.</p> -->
         </div>
         <div class="col-md-6">
             <h3>¿En qué podemos ayudarte?</h3>
