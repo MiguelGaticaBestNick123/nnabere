@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect
 from .models import Profesionales, Pacientes, Agenda
 from .forms import AgendarCitaForm
-from .forms import LoginForm
+from .forms import LoginForm, CustomUserCreationForm, PacienteForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import JsonResponse
 from django.http import HttpResponse
 import requests
+from itertools import cycle
+from django.contrib.auth.decorators import permission_required, login_required
+
 
 
 # Resto de tus importaciones y código
@@ -138,3 +141,61 @@ def verificar_rut(request):
         existe = False
 
     return JsonResponse({'existe': existe})
+
+def registro(request):
+     
+    
+    if request.method == 'POST':
+        formulario = CustomUserCreationForm(request.POST)
+        if formulario.is_valid():
+            formulario = CustomUserCreationForm(data=request.POST)
+            formulario.save()
+            User = authenticate(username=formulario.cleaned_data["username"], password=formulario.cleaned_data["password1"])
+            login(request, User)
+            messages.success(request, "Te has registrado correctamente")
+            return redirect(to="datosform")
+    data = {
+    'form': CustomUserCreationForm()
+}
+    return render(request, 'app/registro.html', data)
+def validar_rut(rut):
+    rut = rut.upper()
+    rut = rut.replace("-","")
+    rut = rut.replace(".","")
+    aux = rut[:-1]
+    dv = rut[-1:]
+ 
+    revertido = map(int, reversed(str(aux)))
+    factors = cycle(range(2, 8))
+    s = sum(d * f for d, f in zip(revertido,factors))
+    res = (-s)%11
+ 
+    if str(res) == dv:
+        return True
+    elif dv=="K" and res==10:
+        return True
+    else:
+        return False
+@login_required
+def datosform(request):
+    if request.method == 'POST':
+        form = PacienteForm(request.POST)
+        if form.is_valid():
+            rut = form.cleaned_data['RutPaciente']
+            if validar_rut(rut):
+                paciente = form.save(commit=False)
+                paciente.IdUsuario = request.user
+                paciente.save()
+                return redirect('inicio')
+            else:
+                form.add_error('RutPaciente', 'El Rut no es válido')
+    else:
+        form = PacienteForm()
+
+    return render(request, 'app/registro2.html', {'form': form})
+
+
+
+
+
+

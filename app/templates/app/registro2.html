@@ -1,0 +1,35 @@
+{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white" id="card">Registro de Usuario</div>
+                    <form action="" method="post" enctype="multipart/form-data">
+                        
+                            {% csrf_token %}
+                            {{ form | crispy }}
+                            | <input type="submit" value="Registrarse" class="btn btn-success float-right"> |
+                            <a href="{% url 'inicio' %}">Ir al Inicio</a> |
+                            <a href="{% url 'login' %}">Iniciar Sesión</a> 
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  
+</body>
+</html>
+    
