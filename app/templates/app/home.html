@@ -97,7 +97,9 @@
                             </span> {{ user.username }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'datosform' %}">Editar Perfil</a>
                         <a class="dropdown-item" href="{% url 'logout' %}">Desconectar</a>
+                        
                     </div>
                 </div>
                 {% endif %}

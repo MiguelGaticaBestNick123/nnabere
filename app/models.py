@@ -3,11 +3,17 @@ from django.contrib.auth.models import User
 
 class Ciudad(models.Model):
     nombreCiudad = models.CharField(max_length=50)
+    def __str__(self):
+        return self.nombreCiudad
 class Prevision(models.Model):
     nombrePrevision = models.CharField(max_length=50)
+    def __str__(self):
+        return self.nombrePrevision
 
 class Especialidad(models.Model):
     nombreEspecialidad = models.CharField(max_length=50)
+    def __str__(self):
+        return self.nombreEspecialidad
 
 class Pacientes(models.Model):
     RutPaciente = models.CharField(max_length=20, verbose_name='Rut del paciente', primary_key=True, unique=True)
@@ -25,6 +31,8 @@ class Pacientes(models.Model):
     NombreSocial = models.CharField(max_length=100, verbose_name='Nombre social del paciente', blank=True, null=True)
     FechaRegistro = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de registro del paciente', blank=True, null=True)
     IdUsuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.RutPaciente
 
 class Profesionales(models.Model):
     Rut = models.CharField(max_length=20, verbose_name='Rut del profesional', unique=True, primary_key=True)
@@ -40,12 +48,16 @@ class Profesionales(models.Model):
     Estado = models.BooleanField(verbose_name='Estado del profesional')
     FechaRegistro = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de registro del profesional')
     IdUsuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.Rut
 
 class Bloque(models.Model):
     Descripcion = models.CharField(max_length=100)
     Estado = models.BooleanField()
     HoraIni = models.TimeField()
     HoraFin = models.TimeField()
+    def __str__(self):
+        return self.Descripcion
 
 class Contrato(models.Model):
 	FechaContrato  	=  	models.DateField(verbose_name='Fecha del contrato')	

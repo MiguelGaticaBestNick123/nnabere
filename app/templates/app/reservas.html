@@ -101,6 +101,7 @@
                             </span> {{ user.username }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="{% url 'datosform' %}">Editar Perfil</a>
                         <a class="dropdown-item" href="{% url 'logout' %}">Desconectar</a>
                     </div>
                 </div>
@@ -119,15 +120,15 @@
         </div>
         <div class="card-body">
             <ul class="list-group">
-                <li class="list-group-item">Reserva con el Dr. Juan Pérez - 15/11/2023 - 10:00 AM</li>
-                <li class="list-group-item">Reserva con la Dra. María Rodríguez - 20/11/2023 - 2:00 PM</li>
-                <li class="list-group-item">Reserva con el Dr. Carlos Sánchez - 25/11/2023 - 4:00 PM</li>
+                {% for reserva in reservas %}
+                    <li class="list-group-item">Reserva con el Dr. {{ reserva.RutProfesional.Nombre }} - {{ reserva.FechaAtencion }} - {{ reserva.IdBloque.HoraInicio }}</li>
+                {% endfor %}
             </ul>
         </div>
     </div>
 
     <!-- Botón para volver -->
-    <a href="#" class="btn btn-info mt-3">Volver</a>
+    <a href="{% url 'agendar' %}" class="btn btn-info mt-3">Volver</a>
 
 </div>
 
@@ -135,5 +136,9 @@
 <div class="footer-fixed">
     © 2023 Clínica Durok.
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

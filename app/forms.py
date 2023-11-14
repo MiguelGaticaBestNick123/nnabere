@@ -54,5 +54,10 @@ class PacienteForm(forms.ModelForm):
             'IDPrevision': forms.Select(attrs={'class': 'form-control'}),
             'IdCiudad': forms.Select(attrs={'class': 'form-control'}),
         }
+        def __init__(self, *args, **kwargs):
+            super(PacienteForm, self).__init__(*args, **kwargs)
+            instance = getattr(self, 'instance', None)
+            if instance and instance.pk:
+                self.fields['RutPaciente'].widget.attrs['readonly'] = True
 
 

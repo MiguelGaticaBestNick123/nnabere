@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Profesionales, Pacientes, Agenda
+from .models import Profesionales, Pacientes, Agenda, Bloque
 from .forms import AgendarCitaForm
 from .forms import LoginForm, CustomUserCreationForm, PacienteForm
 from django.contrib.auth import authenticate, login, logout
@@ -42,7 +42,16 @@ def fetch_feriados():
         print(f'Error al obtener feriados: {e}')
         return []
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def agendar(request):
+    # Obtén el RUT del paciente que está actualmente logueado
+    paciente = Pacientes.objects.get(IdUsuario=request.user)
+    rut_paciente = paciente.RutPaciente
+    bloques_disponibles = Bloque.objects.filter(Estado=True)
+
+
     if request.method == 'POST':
         action = request.POST.get('action')
         if action == 'reservar':
@@ -50,6 +59,7 @@ def agendar(request):
             rut_profesional = request.POST.get('profesional')
             fecha = request.POST.get('fecha')
             hora = request.POST.get('hora')
+            
 
             # Realiza la validación del RUT aquí, si es válido, continua con el proceso de reserva.
             # Si no es válido, puedes agregar un mensaje de error.
@@ -65,7 +75,7 @@ def agendar(request):
                 if fecha in feriados:
                     mensaje_error = "La fecha seleccionada es un día feriado."
                     profesional = Profesionales.objects.all()
-                    contexto = {"data": profesional, "error_message": mensaje_error}
+                    contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente}
                     return render(request, 'app/pedirhora.html', contexto)
 
                 agenda = Agenda(
@@ -82,13 +92,14 @@ def agendar(request):
                 # El RUT del paciente no existe en la base de datos, muestra un mensaje de error.
                 mensaje_error = "El RUT del paciente no existe en la base de datos."
                 profesional = Profesionales.objects.all()
-                contexto = {"data": profesional, "error_message": mensaje_error}
+                contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente}
                 return render(request, 'app/pedirhora.html', contexto)
 
     # Resto de tu vista para mostrar el formulario inicial
     profesional = Profesionales.objects.all()
-    contexto = {"data": profesional}
+    contexto = {"data": profesional, "rut_paciente": rut_paciente, "bloques": bloques_disponibles}
     return render(request, 'app/pedirhora.html', contexto)
+
 
 
 
@@ -123,12 +134,11 @@ def logout_view(request):
 
 
 
-
+@login_required
 def reservas(request):
-    profesional = Profesionales.objects.all()
-    reserva = Agenda.objects.all()
-    contexto = {"data": profesional,
-                "reserva":reserva}
+    paciente = Pacientes.objects.get(IdUsuario=request.user)
+    reservas = Agenda.objects.filter(RutPaciente=paciente.RutPaciente)
+    contexto = {"reservas": reservas}
     return render(request,'app/reservas.html', contexto)
 
 
@@ -143,8 +153,6 @@ def verificar_rut(request):
     return JsonResponse({'existe': existe})
 
 def registro(request):
-     
-    
     if request.method == 'POST':
         formulario = CustomUserCreationForm(request.POST)
         if formulario.is_valid():
@@ -156,7 +164,7 @@ def registro(request):
             return redirect(to="datosform")
     data = {
     'form': CustomUserCreationForm()
-}
+        }
     return render(request, 'app/registro.html', data)
 def validar_rut(rut):
     rut = rut.upper()
@@ -178,21 +186,27 @@ def validar_rut(rut):
         return False
 @login_required
 def datosform(request):
+    try:
+        paciente = Pacientes.objects.get(IdUsuario=request.user)
+    except Pacientes.DoesNotExist:
+        paciente = None
+
     if request.method == 'POST':
-        form = PacienteForm(request.POST)
+        post = request.POST.copy()  # Hacer una copia mutable del objeto POST
+        if paciente is not None:
+            post['RutPaciente'] = paciente.RutPaciente  # Sobrescribir el RutPaciente con el valor existente
+        form = PacienteForm(post, instance=paciente)  # Pasar el objeto POST modificado al formulario
         if form.is_valid():
-            rut = form.cleaned_data['RutPaciente']
-            if validar_rut(rut):
-                paciente = form.save(commit=False)
-                paciente.IdUsuario = request.user
-                paciente.save()
-                return redirect('inicio')
-            else:
-                form.add_error('RutPaciente', 'El Rut no es válido')
+            paciente = form.save(commit=False)
+            paciente.IdUsuario = request.user
+            paciente.save()
+            return redirect('inicio')
     else:
-        form = PacienteForm()
+        form = PacienteForm(instance=paciente)
 
     return render(request, 'app/registro2.html', {'form': form})
+
+
 
 
 
