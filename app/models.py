@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+def is_secretaria(self):
+    return self.groups.filter(name='Secretarias').exists()
+
+User.add_to_class('is_secretaria', is_secretaria)
+
 class Ciudad(models.Model):
     nombreCiudad = models.CharField(max_length=50)
     def __str__(self):
@@ -52,6 +57,7 @@ class Profesionales(models.Model):
         return self.Rut
 
 class Bloque(models.Model):
+    RutProfesional     	=  	models.ForeignKey(Profesionales, on_delete=models.CASCADE, verbose_name="Rut del profesional", related_name='RutProfesional_bloque')	
     Descripcion = models.CharField(max_length=100)
     Estado = models.BooleanField()
     HoraIni = models.TimeField()
@@ -82,7 +88,7 @@ class Agenda(models.Model):
     FechaAtencion = models.DateField(verbose_name="Fecha de atención", null=True)
     Estado = models.BooleanField(null=True)
     IdBloque = models.ForeignKey(Bloque, on_delete=models.CASCADE, related_name='bloque', verbose_name="ID de bloque", null=True)
-    Tarifa 	= 	models.DecimalField(decimal_places=2, max_digits=10, null=True)
+    Tarifa 	= 	models.DecimalField(decimal_places=2, max_digits=10, null=True, default=25000)
     IdBox 	= 	models.ForeignKey(Box, on_delete=models.CASCADE, related_name='agenda_box', null=True)
     IdContrato 	= 	models.ForeignKey(Contrato, on_delete=models.CASCADE, related_name='agenda_contrato', null=True)
     

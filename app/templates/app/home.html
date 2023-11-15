@@ -58,8 +58,9 @@
     <div class="container">
         
         <a class="navbar-brand " href="#" style="font-size: 39px;">
-            <img src="{% static 'assets/imgs/png-clipart-dr-mario-dr-luigi-super-mario-bros-mario-yoshi-mario-purple-heroes (2).png' %}" alt="Logo Clínica Durok" width="50" height="50">
-        </a>
+            <a href="{% url 'inicio' %}">
+                <img src="{% static 'assets/imgs/png-clipart-dr-mario-dr-luigi-super-mario-bros-mario-yoshi-mario-purple-heroes (2).png' %}" alt="Logo Clínica Durok" width="50" height="50">
+            </a>        </a>
         <p style="font-size: 30px; color: white;">Clinica Durok</p>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -72,18 +73,36 @@
                 <li class="nav-item">
                     <span class="nav-link" style="color: white;">-</span>
                 </li>
+                {% if not user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}" style="color: white;">Iniciar Sesión</a>
                 </li>
+                {% endif %}
+                {% if not user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'registro' %}" style="color: white;">Registrarse</a>
                 </li>
                 <li class="nav-item">
                     <span class="nav-link" style="color: white;">-</span>
                 </li>
+                {% endif %}
+                    {% if user.is_authenticated and not user.is_secretaria %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'agendar' %}" style="color: white;">Reservar hora</a>
+                    </li>
+                    {% elif user.is_authenticated and user.is_secretaria %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'agendar_secretaria' %}" style="color: white;">Agendar hora</a>
+                    </li>
+                {% endif %}
+                {% if user.is_authenticated and user.is_secretaria %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#" style="color: white;">Contáctanos</a>
+                    <span class="nav-link" style="color: white;">-</span>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'secretaria' %}" style="color: white;">Secretaria</a>
+                {% endif %}
+
                 <!-- Nombre del usuario autenticado y menú desplegable de desconexión -->
                 
             </ul>
@@ -107,6 +126,7 @@
 </nav>
 
 <!-- Contenido principal -->
+{% block contenido %}
 <div class="container mt-4">
     <h2>Bienvenido a la Clínica Durok</h2>
     <p>Servicios de alta calidad para tu bienestar.</p>
@@ -120,18 +140,23 @@
         <div class="col-md-6">
             <h3>¿En qué podemos ayudarte?</h3>
             <p>Contamos con una amplia gama de servicios para tu salud y bienestar. ¡Elige la opción que mejor se adapte a tus necesidades!</p>
-            <a href="contacto.html" class="btn btn-success btn-lg mb-3">Contacto con un Profesional de Salud</a>
-            <a href="{% url 'agendar' %}" class="btn btn-primary btn-lg mb-3">Reservar Hora medica</a>
+            <a href="{% url 'contacto' %}" class="btn btn-success btn-lg mb-3">Contacto con un Profesional de Salud</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'agendar' %}" class="btn btn-primary btn-lg mb-3">Reservar Hora medica</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg mb-3">Reservar Hora medica</a>
+            {% endif %}
         </div>
     </div>
 </div>
-
+{% endblock %}
 <!-- Pie de página fijo en la parte inferior -->
 <div class="footer">
     &copy; 2023 Clínica Durok. Todos los derechos reservados.
 </div>
 
 <!-- Enlace a Bootstrap JS (opcional) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

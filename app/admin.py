@@ -1,6 +1,13 @@
 from django.contrib import admin
 from .models import Ciudad, Prevision, Especialidad, Pacientes, Profesionales, Bloque, Contrato, Box, Agenda, HistorialPago
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
+
+# Crear grupo de médicos
+medicos_group, created = Group.objects.get_or_create(name='Medicos')
+
+# Crear grupo de secretarias
+secretarias_group, created = Group.objects.get_or_create(name='Secretarias')
 
 
 @admin.register(Ciudad)

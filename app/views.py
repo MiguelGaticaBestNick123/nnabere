@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Profesionales, Pacientes, Agenda, Bloque
+from .models import Profesionales, Pacientes, Agenda, Bloque, Box
 from .forms import AgendarCitaForm
 from .forms import LoginForm, CustomUserCreationForm, PacienteForm
 from django.contrib.auth import authenticate, login, logout
@@ -8,6 +8,9 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 import requests
 from itertools import cycle
+from django.contrib.auth.decorators import user_passes_test
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required, login_required
 
 
@@ -22,10 +25,10 @@ from django.contrib.auth.decorators import permission_required, login_required
 def inicio (request):
     return render (request, 'app/home.html')
 
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
 
 
+def in_secretarias_group(user):
+    return user.groups.filter(name='Secretarias').exists() 
 
 def fetch_feriados():
     # URL de la API de feriados
@@ -43,10 +46,16 @@ def fetch_feriados():
         return []
 
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
+
+def bloques_disponibles(request):
+    rut_profesional = request.GET.get('rut_profesional')
+    bloques = Bloque.objects.filter(RutProfesional=rut_profesional).values()
+    return JsonResponse(list(bloques), safe=False)
 
 @login_required
 def agendar(request):
-    # Obtén el RUT del paciente que está actualmente logueado
     paciente = Pacientes.objects.get(IdUsuario=request.user)
     rut_paciente = paciente.RutPaciente
     bloques_disponibles = Bloque.objects.filter(Estado=True)
@@ -59,18 +68,12 @@ def agendar(request):
             rut_profesional = request.POST.get('profesional')
             fecha = request.POST.get('fecha')
             hora = request.POST.get('hora')
-            
-
-            # Realiza la validación del RUT aquí, si es válido, continua con el proceso de reserva.
-            # Si no es válido, puedes agregar un mensaje de error.
-
-            # Luego, procede con el proceso de reserva si el RUT es válido.
+            bloque_id = request.POST.get('bloque')
             try:
                 paciente = Pacientes.objects.get(RutPaciente=rut_paciente)
                 profesional = Profesionales.objects.get(Rut=rut_profesional)
-
-                # Verificar si la fecha seleccionada es un día feriado a través de la API
                 feriados = fetch_feriados()
+                bloque = Bloque.objects.get(id=bloque_id)
 
                 if fecha in feriados:
                     mensaje_error = "La fecha seleccionada es un día feriado."
@@ -83,19 +86,20 @@ def agendar(request):
                     RutProfesional=profesional,
                     FechaAtencion=fecha,
                     Tarifa=profesional.Tarifa,
-                    # Agrega otros campos que necesites
+                    IdBloque=bloque,
                 )
                 agenda.save()
+                bloque = Bloque.objects.get(id=bloque_id)
+                bloque.Estado = False
+                bloque.save()
 
                 return redirect('inicio')
             except Pacientes.DoesNotExist:
-                # El RUT del paciente no existe en la base de datos, muestra un mensaje de error.
                 mensaje_error = "El RUT del paciente no existe en la base de datos."
                 profesional = Profesionales.objects.all()
                 contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente}
                 return render(request, 'app/pedirhora.html', contexto)
 
-    # Resto de tu vista para mostrar el formulario inicial
     profesional = Profesionales.objects.all()
     contexto = {"data": profesional, "rut_paciente": rut_paciente, "bloques": bloques_disponibles}
     return render(request, 'app/pedirhora.html', contexto)
@@ -103,9 +107,64 @@ def agendar(request):
 
 
 
+@user_passes_test(in_secretarias_group)
+def secretaria(request):
+    
+    return render(request, 'app/secretaria.html')
+
+def agendar_secretaria(request):
+    paciente = Pacientes.objects.get(IdUsuario=request.user)
+    rut_paciente = paciente.RutPaciente
+    bloques_disponibles = Bloque.objects.filter(Estado=True)
 
 
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'reservar':
+            rut_paciente = request.POST.get('rut')
+            rut_profesional = request.POST.get('profesional')
+            fecha = request.POST.get('fecha')
+            hora = request.POST.get('hora')
+            bloque_id = request.POST.get('bloque')
+            box_id = request.POST.get('box')
+            tarifa = request.POST.get('tarifa')
+            try:
+                paciente = Pacientes.objects.get(RutPaciente=rut_paciente)
+                profesional = Profesionales.objects.get(Rut=rut_profesional)
+                feriados = fetch_feriados()
+                bloque = Bloque.objects.get(id=bloque_id)
+                box = Box.objects.get(id=box_id)
 
+                if fecha in feriados:
+                    mensaje_error = "La fecha seleccionada es un día feriado."
+                    profesional = Profesionales.objects.all()
+                    
+                    contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente}
+                    return render(request, 'app/pedirhora.html', contexto)
+
+                agenda = Agenda(
+                    RutPaciente=paciente,
+                    RutProfesional=profesional,
+                    FechaAtencion=fecha,
+                    Tarifa=tarifa,
+                    IdBloque=bloque,
+                    IdBox=box,
+                )
+                agenda.save()
+                bloque = Bloque.objects.get(id=bloque_id)
+                bloque.Estado = False
+                bloque.save()
+
+                return redirect('inicio')
+            except Pacientes.DoesNotExist:
+                mensaje_error = "El RUT del paciente no existe en la base de datos."
+                profesional = Profesionales.objects.all()
+                contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente}
+                return render(request, 'app/pedirhora.html', contexto)
+
+    profesional = Profesionales.objects.all()
+    contexto = {"data": profesional, "rut_paciente": rut_paciente, "bloques": bloques_disponibles}
+    return render(request, 'app/agendar_secretaria.html', contexto)
 def login_view(request):
     mensaje = ""
     if request.method == 'POST':
@@ -132,7 +191,17 @@ def logout_view(request):
     logout(request)  # Realiza la desconexión del usuario
     return render(request,'app/home.html')
 
+def eliminar_reserva(request, reserva_id):
+    reserva = Agenda.objects.get(id=reserva_id)
+    Bloque.objects.filter(id=reserva.IdBloque.id).update(Estado=True)
+    reserva.delete()
 
+    return redirect('reservas')
+
+
+
+def contacto(request):
+    return render(request, 'app/contacto.html')
 
 @login_required
 def reservas(request):
