@@ -10,6 +10,7 @@ medicos_group, created = Group.objects.get_or_create(name='Medicos')
 secretarias_group, created = Group.objects.get_or_create(name='Secretarias')
 
 
+
 @admin.register(Ciudad)
 class CiudadAdmin(admin.ModelAdmin):
     list_display = ('nombreCiudad',)
