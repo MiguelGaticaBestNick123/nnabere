@@ -1,0 +1,32 @@
+{% extends 'app/home.html' %}
+{% block contenido %}
+{% load static %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Lista de reservas</h2>
+    <table class="table table-striped">
+    <thead>
+        <tr>
+        <th scope="col">Cliente</th>
+        <th scope="col">Medico</th>
+        <th scope="col">Bloque</th>
+        <th scope="col">Tarifa</th>
+        <th scope="col">Box</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for reserva in reservas %}
+        <tr>
+        <td>{{ reserva.RutPaciente }}</td>
+        <td>{{ reserva.RutProfesional }}</td>
+        <td>{{ reserva.IdBloque }}</td>
+        <td>{{ reserva.Tarifa }}</td>
+        <td>{{ reserva.IdBox }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+</div>
+
+
+{% endblock %}

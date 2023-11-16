@@ -76,11 +76,12 @@ class Contrato(models.Model):
 	IdUsuario      	    =  	models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Box(models.Model):
-	Descripcion    	=  	models.TextField(blank=True, null=True, max_length=100)	
-	ValorMensual  	=  	models.DecimalField(decimal_places=2, max_digits=10)	
-	FechaRegistro  	=  	models.DateTimeField(auto_now_add=True, verbose_name='Fecha de registro de la caja')	
-	IdUsuario      	=  	models.ForeignKey(User, on_delete=models.CASCADE)
-
+    Descripcion    	=  	models.TextField(blank=True, null=True, max_length=100)	
+    ValorMensual  	=  	models.DecimalField(decimal_places=2, max_digits=10)	
+    FechaRegistro  	=  	models.DateTimeField(auto_now_add=True, verbose_name='Fecha de registro de la caja')	
+    Estado = models.BooleanField(null=True, default=True)
+    def __str__(self):
+        return self.Descripcion
 class Agenda(models.Model):
     RutProfesional = models.ForeignKey(Profesionales, on_delete=models.CASCADE, related_name='profesional', verbose_name="Rut del profesional", null=True)
     RutPaciente = models.ForeignKey(Pacientes, on_delete=models.CASCADE, related_name='paciente', verbose_name="Rut del paciente", null=True)
@@ -88,7 +89,7 @@ class Agenda(models.Model):
     FechaAtencion = models.DateField(verbose_name="Fecha de atención", null=True)
     Estado = models.BooleanField(null=True)
     IdBloque = models.ForeignKey(Bloque, on_delete=models.CASCADE, related_name='bloque', verbose_name="ID de bloque", null=True)
-    Tarifa 	= 	models.DecimalField(decimal_places=2, max_digits=10, null=True, default=25000)
+    Tarifa 	= 	models.IntegerField( null=True, default=25000)
     IdBox 	= 	models.ForeignKey(Box, on_delete=models.CASCADE, related_name='agenda_box', null=True)
     IdContrato 	= 	models.ForeignKey(Contrato, on_delete=models.CASCADE, related_name='agenda_contrato', null=True)
     

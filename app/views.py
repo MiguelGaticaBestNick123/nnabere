@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Profesionales, Pacientes, Agenda, Bloque, Box
+from .models import Profesionales, Pacientes, Agenda, Bloque, Box, Especialidad
 from .forms import AgendarCitaForm
 from .forms import LoginForm, CustomUserCreationForm, PacienteForm
 from django.contrib.auth import authenticate, login, logout
@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -45,8 +46,7 @@ def fetch_feriados():
         print(f'Error al obtener feriados: {e}')
         return []
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+
 
 
 def bloques_disponibles(request):
@@ -113,33 +113,37 @@ def secretaria(request):
     return render(request, 'app/secretaria.html')
 
 def agendar_secretaria(request):
+    # Obtén los datos necesarios
     paciente = Pacientes.objects.get(IdUsuario=request.user)
     rut_paciente = paciente.RutPaciente
     bloques_disponibles = Bloque.objects.filter(Estado=True)
-
+    boxes = Box.objects.all()
+    profesional = Profesionales.objects.all()
 
     if request.method == 'POST':
+        print("poto")
+        print(request.POST)  # Imprime los datos del formulario
         action = request.POST.get('action')
         if action == 'reservar':
+            # Obtén los datos del formulario
             rut_paciente = request.POST.get('rut')
             rut_profesional = request.POST.get('profesional')
             fecha = request.POST.get('fecha')
-            hora = request.POST.get('hora')
             bloque_id = request.POST.get('bloque')
             box_id = request.POST.get('box')
-            tarifa = request.POST.get('tarifa')
+            tarifa = request.POST.get('tarifa') 
+
             try:
+                # Verifica los datos y crea la agenda
                 paciente = Pacientes.objects.get(RutPaciente=rut_paciente)
                 profesional = Profesionales.objects.get(Rut=rut_profesional)
-                feriados = fetch_feriados()
                 bloque = Bloque.objects.get(id=bloque_id)
                 box = Box.objects.get(id=box_id)
 
+                feriados = fetch_feriados()
                 if fecha in feriados:
                     mensaje_error = "La fecha seleccionada es un día feriado."
-                    profesional = Profesionales.objects.all()
-                    
-                    contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente}
+                    contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente, "boxes": boxes}
                     return render(request, 'app/pedirhora.html', contexto)
 
                 agenda = Agenda(
@@ -150,21 +154,28 @@ def agendar_secretaria(request):
                     IdBloque=bloque,
                     IdBox=box,
                 )
+                print(agenda)  # Imprime el objeto agenda
                 agenda.save()
-                bloque = Bloque.objects.get(id=bloque_id)
+
                 bloque.Estado = False
                 bloque.save()
-
+                print(box)
+                print("El box 2es"+box+"y el id es"+box_id)
                 return redirect('inicio')
             except Pacientes.DoesNotExist:
                 mensaje_error = "El RUT del paciente no existe en la base de datos."
-                profesional = Profesionales.objects.all()
-                contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente}
+                contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente, "boxes": boxes}
                 return render(request, 'app/pedirhora.html', contexto)
-
-    profesional = Profesionales.objects.all()
-    contexto = {"data": profesional, "rut_paciente": rut_paciente, "bloques": bloques_disponibles}
+            except Exception as e:  # Captura todas las excepciones
+                print(e)  # Imprime el error
+                mensaje_error = "Ocurrió un error al guardar la agenda."
+                contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente, "boxes": boxes}
+                return render(request, 'app/agendar_secretaria.html', contexto)
+    print("test")
+    contexto = {"data": profesional, "rut_paciente": rut_paciente, "bloques": bloques_disponibles, "boxes": boxes}
     return render(request, 'app/agendar_secretaria.html', contexto)
+
+
 def login_view(request):
     mensaje = ""
     if request.method == 'POST':
@@ -276,7 +287,13 @@ def datosform(request):
     return render(request, 'app/registro2.html', {'form': form})
 
 
+def lista_medico(request):
+    medicos = Profesionales.objects.all()
+    return render(request, 'app/lista_medico.html', {'medicos': medicos})
 
+def lista_reserva(request):
+    reservas = Agenda.objects.all()
+    return render(request, 'app/lista_reserva.html', {'reservas': reservas})
 
 
 

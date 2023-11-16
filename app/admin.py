@@ -41,7 +41,8 @@ class ContratoAdmin(admin.ModelAdmin):
 
 @admin.register(Box)
 class BoxAdmin(admin.ModelAdmin):
-    list_display = ('Descripcion', 'ValorMensual', 'FechaRegistro', 'IdUsuario')
+    
+    list_display = ('Descripcion', 'ValorMensual', 'FechaRegistro', 'Estado')
 
 @admin.register(Agenda)
 class AgendaAdmin(admin.ModelAdmin):
