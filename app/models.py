@@ -6,6 +6,11 @@ def is_secretaria(self):
 
 User.add_to_class('is_secretaria', is_secretaria)
 
+def is_medico(self):
+    return self.groups.filter(name='Medicos').exists()
+
+User.add_to_class('is_medico', is_medico)
+
 class Ciudad(models.Model):
     nombreCiudad = models.CharField(max_length=50)
     def __str__(self):
@@ -90,7 +95,7 @@ class Agenda(models.Model):
     Estado = models.BooleanField(null=True)
     IdBloque = models.ForeignKey(Bloque, on_delete=models.CASCADE, related_name='bloque', verbose_name="ID de bloque", null=True)
     Tarifa 	= 	models.IntegerField( null=True, default=25000)
-    IdBox 	= 	models.ForeignKey(Box, on_delete=models.CASCADE, related_name='agenda_box', null=True)
+    IdBox = models.ForeignKey(Box, on_delete=models.CASCADE, related_name='agenda_box', null=True)
     IdContrato 	= 	models.ForeignKey(Contrato, on_delete=models.CASCADE, related_name='agenda_contrato', null=True)
     
 class HistorialPago(models.Model):

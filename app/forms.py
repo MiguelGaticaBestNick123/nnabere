@@ -60,4 +60,7 @@ class PacienteForm(forms.ModelForm):
             if instance and instance.pk:
                 self.fields['RutPaciente'].widget.attrs['readonly'] = True
 
-
+class ProfesionalForm(forms.ModelForm):
+    class Meta:
+        model = Profesionales
+        exclude = ['Rut','IdUsuario','FechaRegistro','Estado','Tarifa','IDEspecialidad']

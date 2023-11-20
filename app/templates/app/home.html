@@ -102,6 +102,13 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'secretaria' %}" style="color: white;">Secretaria</a>
                 {% endif %}
+                {% if user.is_authenticated and user.is_medico %}
+                <li class="nav-item">
+                    <span class="nav-link" style="color: white;">-</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lista_paciente' %}" style="color: white;">Lista pacientes</a>
+                {% endif %}
 
                 <!-- Nombre del usuario autenticado y menú desplegable de desconexión -->
                 
@@ -116,7 +123,11 @@
                             </span> {{ user.username }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{% url 'datosform' %}">Editar Perfil</a>
+                        {% if user.is_authenticated and user.is_medico %}
+                            <a class="dropdown-item" href="{% url 'datosform_medico' %}">Editar Perfil</a>
+                        {%else%}
+                            <a class="dropdown-item" href="{% url 'datosform' %}">Editar Perfil</a>
+                        {% endif %}
                         <a class="dropdown-item" href="{% url 'logout' %}">Desconectar</a>
                         
                     </div>

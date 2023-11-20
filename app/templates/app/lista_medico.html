@@ -19,7 +19,7 @@
         <td>{{ medico.Nombres }} {{ medico.ApePat }} {{ medico.ApeMat }}</td>
         <td>{{ medico.IDEspecialidad }}</td>
         <td>{{ medico.Email }}</td>
-        <td>{{ medico.Estado }}</td>
+        <td>{% if medico.Estado %}Activo{% else %}Inactivo{% endif %}</td>
         </tr>
         {% endfor %}
     </tbody>

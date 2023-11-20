@@ -2,31 +2,44 @@
 {% block contenido %}
 {% load static %}
 
-<div class="container mt-5">
-    <h2 class="mb-4">Lista de reservas</h2>
-    <table class="table table-striped">
-    <thead>
-        <tr>
-        <th scope="col">Cliente</th>
-        <th scope="col">Medico</th>
-        <th scope="col">Bloque</th>
-        <th scope="col">Tarifa</th>
-        <th scope="col">Box</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for reserva in reservas %}
-        <tr>
-        <td>{{ reserva.RutPaciente }}</td>
-        <td>{{ reserva.RutProfesional }}</td>
-        <td>{{ reserva.IdBloque }}</td>
-        <td>{{ reserva.Tarifa }}</td>
-        <td>{{ reserva.IdBox }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    </table>
-</div>
+<div class="container my-5">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <h2>Lista de reservas</h2>
+      <div>
+        <button class="btn btn-primary">Nueva reserva</button>  
+      </div>
+    </div>
+  
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Cliente</th>
+            <th scope="col">Médico</th>  
+            <th scope="col">Bloque</th>
+            <th scope="col">Tarifa</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+  
+        <tbody>
+          {% for reserva in reservas %}
+          <tr>
+            <td>{{ reserva.RutPaciente }}</td>
+            <td>{{ reserva.RutProfesional }}</td>
+            <td>{{ reserva.IdBloque }}</td>
+            <td>{{ reserva.Tarifa }}</td>
+            <td>
+              <button class="btn btn-sm btn-danger">Cancelar</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  
+  </div>
 
 
 {% endblock %}

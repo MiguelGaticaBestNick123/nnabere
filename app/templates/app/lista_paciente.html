@@ -1,0 +1,32 @@
+{% extends 'app/home.html' %}
+{% block contenido %}
+{% load static %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Lista de Profesionales</h2>
+    <table class="table table-striped">
+    <thead>
+        <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Prevision</th>
+        <th scope="col">Ciudad</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for paciente in pacientes %}
+        <tr>
+        <td>{{ paciente.Nombres }} {{ paciente.ApePat }} {{ paciente.ApeMat }}</td>
+        <td>{{ paciente.IDPrevision }}</td>
+        <td>{{ paciente.IdCiudad }}</td>
+        <td>{% if paciente.Estado %}Activo{% else %}Inactivo{% endif %}</td>
+        <td>{{ paciente.Email }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+</div>
+
+
+{% endblock %}
