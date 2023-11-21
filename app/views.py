@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.http import HttpResponse
 import requests
+from django.shortcuts import get_object_or_404
+
 from itertools import cycle
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
@@ -288,13 +290,22 @@ def lista_reserva(request):
     reservas = Agenda.objects.all()
     return render(request, 'app/lista_reserva.html', {'reservas': reservas})
 
+def marcar_como_pagado(request, reserva_id):
+    reserva = get_object_or_404(Agenda, id=reserva_id)
+    
+    # Cambiar el estado de la reserva a True
+    reserva.Estado = True
+    reserva.save()
+
+    # Puedes devolver una respuesta JSON si lo deseas
+    return JsonResponse({'status': 'success'})
 
 @user_passes_test(in_medicos_group)
 def lista_paciente(request):
     usuario_actual = request.user
     agendas = Agenda.objects.filter(RutProfesional__IdUsuario=usuario_actual)
-    pacientes = [agenda.RutPaciente for agenda in agendas]
-    return render(request, 'app/lista_paciente.html', {'pacientes': pacientes})
+    return render(request, 'app/lista_paciente.html', {'agendas': agendas})
+
 
 @user_passes_test(in_medicos_group)
 def datosform_medico(request):

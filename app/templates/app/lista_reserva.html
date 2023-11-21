@@ -1,7 +1,7 @@
 {% extends 'app/home.html' %}
 {% block contenido %}
 {% load static %}
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <div class="container my-5">
 
     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -22,7 +22,7 @@
             <th scope="col"></th>
           </tr>
         </thead>
-  
+      
         <tbody>
           {% for reserva in reservas %}
           <tr>
@@ -31,15 +31,36 @@
             <td>{{ reserva.IdBloque }}</td>
             <td>{{ reserva.Tarifa }}</td>
             <td>
-              <button class="btn btn-sm btn-danger">Cancelar</button>
+              <button class="btn btn-sm btn-danger" onclick="cancelarReserva({{ reserva.id }})">Cancelar</button>
+              <button class="btn btn-sm btn-success" onclick="marcarComoPagado({{ reserva.id }})">Marcar como Pagado</button>
             </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      
+      
     </div>
   
   </div>
 
-
+  <script>
+    function marcarComoPagado(reservaId) {
+      fetch('/marcar_como_pagado/' + reservaId + '/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'  // Asegúrate de incluir el token CSRF si estás usando Django
+        },
+        body: JSON.stringify({}),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+  </script>
 {% endblock %}

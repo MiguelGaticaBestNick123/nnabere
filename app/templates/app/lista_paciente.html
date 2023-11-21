@@ -5,27 +5,30 @@
 <div class="container mt-5">
     <h2 class="mb-4">Lista de Profesionales</h2>
     <table class="table table-striped">
-    <thead>
-        <tr>
-        <th scope="col">Nombre</th>
-        <th scope="col">Prevision</th>
-        <th scope="col">Ciudad</th>
-        <th scope="col">Estado</th>
-        <th scope="col">Email</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for paciente in pacientes %}
-        <tr>
-        <td>{{ paciente.Nombres }} {{ paciente.ApePat }} {{ paciente.ApeMat }}</td>
-        <td>{{ paciente.IDPrevision }}</td>
-        <td>{{ paciente.IdCiudad }}</td>
-        <td>{% if paciente.Estado %}Activo{% else %}Inactivo{% endif %}</td>
-        <td>{{ paciente.Email }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
+        <thead>
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Previsión</th>
+                <th scope="col">Ciudad</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agenda in agendas %}
+                <tr>
+                    <td>{{ agenda.RutPaciente.Nombres }} {{ agenda.RutPaciente.ApePat }} {{ agenda.RutPaciente.ApeMat }}</td>
+                    <td>{{ agenda.RutPaciente.IDPrevision }}</td>
+                    <td>{{ agenda.RutPaciente.IdCiudad }}</td>
+                    <td style="{% if agenda.Estado %}color: green; font-weight: bold;{% else %}color: red; font-weight: bold;{% endif %}">
+                        {% if agenda.Estado %}Pagado{% else %}Por pagar{% endif %}
+                    </td>
+                    <td>{{ agenda.RutPaciente.Email }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
+    
 </div>
 
 
