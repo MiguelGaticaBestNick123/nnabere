@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.http import HttpResponse
 import requests
+from django.views import View
 from itertools import cycle
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
@@ -103,10 +104,16 @@ def agendar(request):
                 return render(request, 'app/pedirhora.html', contexto)
 
     profesional = Profesionales.objects.all()
-    contexto = {"data": profesional, "rut_paciente": rut_paciente, "bloques": bloques_disponibles}
+    contexto = {"data": profesional, "rut_paciente": rut_paciente}
     return render(request, 'app/pedirhora.html', contexto)
 
 
+class GetBloquesView(View):
+    def get(self, request, *args, **kwargs):
+        rut_profesional = request.GET.get('rut_profesional')
+        bloques = Bloque.objects.filter(RutProfesional=rut_profesional, Estado=True)
+        bloques_json = [{"Descripcion": bloque.Descripcion, "HoraIni": bloque.HoraIni, "HoraFin": bloque.HoraFin} for bloque in bloques]
+        return JsonResponse(bloques_json, safe=False)
 
 
 @user_passes_test(in_secretarias_group)

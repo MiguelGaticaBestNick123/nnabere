@@ -34,9 +34,7 @@
                 <div class="form-group">
                     <label for="bloque">Bloques Disponibles:</label>
                     <select class="form-control" name="bloque" id="bloque">
-                        {% for bloque in bloques %}
-                            <option value="{{ bloque.id }}">{{ bloque.Descripcion }}</option>
-                        {% endfor %}
+
                     </select>
                 </div>
                 <button type="submit" name="action" value="reservar" class="btn btn-primary">Reservar cita</button>
@@ -106,16 +104,25 @@
         }
     </script>
     <script>
+        // jQuery AJAX request
         $('#profesional').change(function() {
-            var rut_profesional = $(this).val();
-            $.get('/ruta/a/bloques_disponibles/', {rut_profesional: rut_profesional}, function(data) {
-                var select = $('#bloque');
-                select.empty();
-                $.each(data, function(index, value) {
-                    select.append('<option value="' + value.id + '">' + value.Descripcion + '</option>');
-                });
+            var rutProfesional = $(this).val();
+            $.ajax({
+                url: '/get_bloques/',
+                data: {
+                    'rut_profesional': rutProfesional
+                },
+                dataType: 'json',
+                success: function(data) {
+                    var select = $('#bloque');
+                    select.empty();
+                    $.each(data, function(index, value) {
+                        select.append('<option value="' + value.Descripcion + '">' + value.HoraIni + ' - ' + value.HoraFin + '</option>');
+                    });
+                }
             });
         });
+
     </script>
     
     {% endblock %}
