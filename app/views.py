@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Profesionales, Pacientes, Agenda, Bloque, Box, Especialidad
-from .forms import AgendarCitaForm
+from .forms import AgendaForm
 from .forms import LoginForm, CustomUserCreationForm, PacienteForm, ProfesionalForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -50,71 +50,37 @@ def fetch_feriados():
         return []
 
 
+class AgendarView(View):
+    def get(self, request):
+        paciente = Pacientes.objects.get(IdUsuario=request.user)
+        rut_paciente = paciente.RutPaciente
+        profesionales = Profesionales.objects.all()
+        form = AgendaForm()
+        return render(request, 'app/pedirhora.html', {'form': form,'rut_paciente': rut_paciente, 'profesionales': profesionales})
 
+    def post(self, request):
+        form = AgendaForm(request.POST)
+        print(form.errors)
+        if form.is_valid():
+            agenda = form.save(commit=False)
+            bloque = form.cleaned_data.get('IdBloque')
+            bloque.Estado = False
+            bloque.save()
+            agenda.save()
+            return redirect('inicio')
+        return render(request, 'app/pedirhora.html', {'form': form})
 
-def bloques_disponibles(request):
+def fetch_bloques(request):
     rut_profesional = request.GET.get('rut_profesional')
-    bloques = Bloque.objects.filter(RutProfesional=rut_profesional).values()
-    return JsonResponse(list(bloques), safe=False)
-
-@login_required
-def agendar(request):
-    paciente = Pacientes.objects.get(IdUsuario=request.user)
-    rut_paciente = paciente.RutPaciente
-    bloques_disponibles = Bloque.objects.filter(Estado=True)
-
-
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        if action == 'reservar':
-            rut_paciente = request.POST.get('rut')
-            rut_profesional = request.POST.get('profesional')
-            fecha = request.POST.get('fecha')
-            hora = request.POST.get('hora')
-            bloque_id = request.POST.get('bloque')
-            try:
-                paciente = Pacientes.objects.get(RutPaciente=rut_paciente)
-                profesional = Profesionales.objects.get(Rut=rut_profesional)
-                feriados = fetch_feriados()
-                bloque = Bloque.objects.get(id=bloque_id)
-
-                if fecha in feriados:
-                    mensaje_error = "La fecha seleccionada es un día feriado."
-                    profesional = Profesionales.objects.all()
-                    contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente}
-                    return render(request, 'app/pedirhora.html', contexto)
-
-                agenda = Agenda(
-                    RutPaciente=paciente,
-                    RutProfesional=profesional,
-                    FechaAtencion=fecha,
-                    Tarifa=profesional.Tarifa,
-                    IdBloque=bloque,
-                )
-                agenda.save()
-                bloque = Bloque.objects.get(id=bloque_id)
-                bloque.Estado = False
-                bloque.save()
-
-                return redirect('inicio')
-            except Pacientes.DoesNotExist:
-                mensaje_error = "El RUT del paciente no existe en la base de datos."
-                profesional = Profesionales.objects.all()
-                contexto = {"data": profesional, "error_message": mensaje_error, "rut_paciente": rut_paciente}
-                return render(request, 'app/pedirhora.html', contexto)
-
-    profesional = Profesionales.objects.all()
-    contexto = {"data": profesional, "rut_paciente": rut_paciente}
-    return render(request, 'app/pedirhora.html', contexto)
-
-
-class GetBloquesView(View):
-    def get(self, request, *args, **kwargs):
-        rut_profesional = request.GET.get('rut_profesional')
-        bloques = Bloque.objects.filter(RutProfesional=rut_profesional, Estado=True)
-        bloques_json = [{"Descripcion": bloque.Descripcion, "HoraIni": bloque.HoraIni, "HoraFin": bloque.HoraFin} for bloque in bloques]
-        return JsonResponse(bloques_json, safe=False)
-
+    bloques = Bloque.objects.filter(RutProfesional=rut_profesional, Estado=True)
+    bloques_list = list(bloques.values())
+    profesional = Profesionales.objects.get(Rut=rut_profesional)
+    tarifa = profesional.Tarifa
+    data = {
+        'bloques': bloques_list,
+        'tarifa': tarifa,
+    }
+    return JsonResponse(data)
 
 @user_passes_test(in_secretarias_group)
 def secretaria(request):

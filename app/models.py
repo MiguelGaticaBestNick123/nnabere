@@ -54,7 +54,7 @@ class Profesionales(models.Model):
     IdCiudad = models.ForeignKey(Ciudad, on_delete=models.CASCADE)
     Cell = models.CharField(max_length=20, verbose_name='Número de celular del profesional')
     Email = models.EmailField(verbose_name='Correo electrónico del profesional')
-    Tarifa = models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Tarifa por hora del profesional')
+    Tarifa = models.IntegerField( null=True, default=25000, verbose_name='Tarifa por hora del profesional')
     Estado = models.BooleanField(verbose_name='Estado del profesional')
     FechaRegistro = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de registro del profesional')
     IdUsuario = models.ForeignKey(User, on_delete=models.CASCADE)

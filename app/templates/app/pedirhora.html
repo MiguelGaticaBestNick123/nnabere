@@ -14,26 +14,30 @@
             <form method="POST" action="{% url 'agendar' %}" id="formulario">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="rut">RUT del Paciente:</label>
-                    <input type="text" class="form-control" name="rut" id="rut" value="{{ rut_paciente }}" readonly>
+                    <label for="RutPaciente">RUT del Paciente:</label>
+                    <input type="text" class="form-control" name="RutPaciente" id="RutPaciente" value="{{ rut_paciente }}" readonly>
                     <div id="rut-validation-result">{{ error_message }}</div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="profesional">Profesional:</label>
-                    <select class="form-control" name="profesional" id="profesional">
-                        {% for prof in data %}
+                    <label for="RutProfesional">Profesional:</label>
+                    <select class="form-control" name="RutProfesional" id="RutProfesional">
+                        {% for prof in profesionales %}
                             <option value="{{ prof.Rut }}">{{ prof.Nombres }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="fecha">Fecha:</label>
-                    <input type="date" class="form-control" name="fecha" id="fecha">
+                    <label for="FechaAtencion">Fecha:</label>
+                    <input type="date" class="form-control" name="FechaAtencion" id="FechaAtencion">
                 </div>
                 <div class="form-group">
-                    <label for="bloque">Bloques Disponibles:</label>
-                    <select class="form-control" name="bloque" id="bloque">
+                    <label for="Tarifa">Tarifa:</label>
+                    <input type="text" class="form-control" name="Tarifa" id="Tarifa" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="IdBloque">Bloques Disponibles:</label>
+                    <select class="form-control" name="IdBloque" id="IdBloque">
 
                     </select>
                 </div>
@@ -46,83 +50,30 @@
         </div>
     </div>    
 </div>
-
 <script>
-    document.querySelector('#formulario').addEventListener('submit', function(e) {
-        var fecha = document.querySelector('#fecha').value;
-        var feriado = false;
-        var profesional = document.querySelector('#profesional').value;
-        var bloque = document.querySelector('#bloque').value;
-
-        // Comprueba si los campos están vacíos
-        if (!fecha || !profesional || !bloque) {
-            alert('Por favor, rellena todos los campos.');
-            e.preventDefault();
-            return;
-        }
-
-        fetch('https://api.victorsanmartin.com/feriados/en.json')
-            .then(response => response.json())
-            .then(data => {
-                var feriados = data;
-                for (var i = 0; i < feriados.data.length; i++) {
-                    if (feriados.data[i].date === fecha) {
-                        feriado = true;
-                        alert('La fecha seleccionada es un día feriado: ' + feriados.data[i].title);
-                        break;
-                    }
-                }
-
-                if (!feriado) {
-                    // La fecha no es un día feriado, permite el envío del formulario
-                    return;
-                } else {
-                    // La fecha es un día feriado, evita el envío del formulario
-                    e.preventDefault();
-                }
-            })
-            .catch(error => console.log('Error:', error));
-    });
-</script>
-
-
-    <script>
-        function validarRut() {
-            var rut = document.getElementById('rut').value;
-            fetch('/verificar_rut/?rut=' + rut)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.existe) {
-                        
-                        document.getElementById('rut-validation-result').innerHTML = '';
-                    } else {
-                        
-                        document.getElementById('rut-validation-result').innerHTML = 'RUT no existe';
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    </script>
-    <script>
-        // jQuery AJAX request
-        $('#profesional').change(function() {
-            var rutProfesional = $(this).val();
+    $(document).ready(function() {
+        $('#RutProfesional').change(function() {
+            var url = "{% url 'fetch_bloques' %}";
+            var rut_profesional = $(this).val();
+    
             $.ajax({
-                url: '/get_bloques/',
+                url: url,
                 data: {
-                    'rut_profesional': rutProfesional
+                    'rut_profesional': rut_profesional
                 },
-                dataType: 'json',
                 success: function(data) {
-                    var select = $('#bloque');
+                    var select = $('#IdBloque');
                     select.empty();
-                    $.each(data, function(index, value) {
-                        select.append('<option value="' + value.Descripcion + '">' + value.HoraIni + ' - ' + value.HoraFin + '</option>');
+                    $.each(data.bloques, function(index, value) {
+                        select.append('<option value="' + value.id + '">' + value.Descripcion + '</option>');
                     });
+                    $('#Tarifa').val(data.tarifa);
                 }
             });
         });
-
+    });
     </script>
+    
+
     
     {% endblock %}

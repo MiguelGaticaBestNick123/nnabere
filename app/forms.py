@@ -5,11 +5,10 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 class LoginForm(AuthenticationForm):
     pass
 
-class AgendarCitaForm(forms.Form):
-    rut = forms.CharField(label='RUT del Paciente', max_length=20)
-    profesional = forms.CharField(label='Profesional', max_length=20)
-    fecha = forms.DateField(label='Fecha de atención')
-    hora = forms.TimeField(label='Hora de atención')
+class AgendaForm(forms.ModelForm):
+    class Meta:
+        model = Agenda
+        fields = ['RutPaciente', 'RutProfesional', 'FechaAtencion', 'Tarifa', 'IdBloque']
 
 class BuscarCitasForm(forms.Form):
     fecha = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
