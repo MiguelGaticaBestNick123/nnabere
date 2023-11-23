@@ -2,14 +2,14 @@ from django import forms
 from .models import Agenda, Pacientes, Profesionales
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, User
 
+
 class LoginForm(AuthenticationForm):
     pass
 
-class AgendarCitaForm(forms.Form):
-    rut = forms.CharField(label='RUT del Paciente', max_length=20)
-    profesional = forms.CharField(label='Profesional', max_length=20)
-    fecha = forms.DateField(label='Fecha de atención')
-    hora = forms.TimeField(label='Hora de atención')
+class AgendaForm(forms.ModelForm):
+    class Meta:
+        model = Agenda
+        fields = ['RutPaciente', 'RutProfesional', 'FechaAtencion', 'Tarifa', 'IdBloque']
 
 class BuscarCitasForm(forms.Form):
     fecha = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
@@ -35,13 +35,14 @@ class CustomUserCreationForm(UserCreationForm):
 class PacienteForm(forms.ModelForm):
     class Meta:
         model = Pacientes
-        fields = ['RutPaciente', 'Nombres', 'ApePat', 'ApeMat', 'OrdenAp', 'IDPrevision', 'IdCiudad']
+        fields = ['RutPaciente', 'Nombres', 'ApePat', 'ApeMat', 'OrdenAp','Email', 'IDPrevision', 'IdCiudad']
         labels = {
             'RutPaciente': 'Rut del paciente',
             'Nombres': 'Nombres del paciente',
             'ApePat': 'Apellido paterno del paciente',
             'ApeMat': 'Apellido materno del paciente',
             'OrdenAp': 'Orden de apellidos',
+            'Email' : 'Correo electrónico del paciente',
             'IDPrevision': 'Previsión',
             'IdCiudad': 'Ciudad',
         }

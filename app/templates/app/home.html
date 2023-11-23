@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clínica XYZ</title>
     <!-- Enlace a Bootstrap CSS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     {% load static %}
@@ -86,15 +87,15 @@
                     <span class="nav-link" style="color: white;">-</span>
                 </li>
                 {% endif %}
-                    {% if user.is_authenticated and not user.is_secretaria %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'agendar' %}" style="color: white;">Reservar hora</a>
-                    </li>
-                    {% elif user.is_authenticated and user.is_secretaria %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'agendar_secretaria' %}" style="color: white;">Agendar hora</a>
-                    </li>
-                {% endif %}
+                {% if user.is_authenticated and not user.is_secretaria and not user.is_medico %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'agendar' %}" style="color: white;">Reservar hora</a>
+                </li>
+            {% elif user.is_authenticated and user.is_secretaria %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'agendar_secretaria' %}" style="color: white;">Agendar hora</a>
+                </li>
+            {% endif %}
                 {% if user.is_authenticated and user.is_secretaria %}
                 <li class="nav-item">
                     <span class="nav-link" style="color: white;">-</span>
@@ -167,8 +168,6 @@
 </div>
 
 <!-- Enlace a Bootstrap JS (opcional) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 

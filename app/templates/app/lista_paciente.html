@@ -3,7 +3,7 @@
 {% load static %}
 
 <div class="container mt-5">
-    <h2 class="mb-4">Lista de Profesionales</h2>
+    <h2 class="mb-4">Lista de Pacientes</h2>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -23,7 +23,9 @@
                     <td style="{% if agenda.Estado %}color: green; font-weight: bold;{% else %}color: red; font-weight: bold;{% endif %}">
                         {% if agenda.Estado %}Pagado{% else %}Por pagar{% endif %}
                     </td>
-                    <td>{{ agenda.RutPaciente.Email }}</td>
+                    <td>
+                        {% if not agenda.RutPaciente.Email %} No tiene email  {%else%} {{ agenda.RutPaciente.Email }}{% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
