@@ -8,6 +8,8 @@ import requests
 from django.views import View
 from itertools import cycle
 from django.contrib.auth.decorators import user_passes_test, permission_required, login_required, login_required
+from django.utils.decorators import method_decorator
+
 
 
 
@@ -36,7 +38,7 @@ def fetch_feriados():
         print(f'Error al obtener feriados: {e}')
         return []
 
-
+@method_decorator(login_required, name='dispatch')
 class AgendarView(View):
     def get(self, request):
         paciente = Pacientes.objects.get(IdUsuario=request.user)
@@ -61,7 +63,7 @@ class AgendarView(View):
     
 ##############################################################################################################################################################################
 
-
+@method_decorator(user_passes_test(in_secretarias_group), name='dispatch')
 class AgendarViewSecretaria(View):
     def get(self, request):
         paciente = Pacientes.objects.get(IdUsuario=request.user)
@@ -187,6 +189,7 @@ def validar_rut(rut):
         return True
     else:
         return False
+    
 @login_required
 def datosform(request):
     try:
